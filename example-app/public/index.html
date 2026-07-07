@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Watch Data Explorer</title>
+    <link rel="stylesheet" href="/app/assets/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <p class="eyebrow">Sample Consumer Experience</p>
+        <h1>Find Watches And Explore Their Market Data</h1>
+        <p class="hero-copy">
+          Search by brand + model reference, discover the canonical group id,
+          then open prices, specs, history, fresh listings, and listing-level
+          price changes.
+        </p>
+      </header>
+
+      <section class="auth-bar panel">
+        <div>
+          <h2>1) Connect API Key</h2>
+          <p>
+            Use your API key from the subscription page as the bearer token.
+          </p>
+        </div>
+        <div class="auth-controls">
+          <input
+            id="apiKey"
+            type="text"
+            placeholder="01ed...:I-..."
+            autocomplete="off"
+          />
+          <button id="btnHealth">Check Service Health</button>
+        </div>
+      </section>
+
+      <section class="panel search-panel">
+        <h2>2) Search Watch Model</h2>
+        <div class="search-row">
+          <input
+            id="resolveQuery"
+            type="text"
+            placeholder="rolex submariner 126610ln"
+          />
+          <button id="btnResolve">Find Model</button>
+        </div>
+        <p class="hint">
+          Successful responses are only valid when HTTP status is 200 and JSON
+          contains
+          <code>status: 1</code>.
+        </p>
+      </section>
+
+      <section id="resolvedPanel" class="panel hidden">
+        <h2>3) Resolved Model</h2>
+        <div id="resolvedCard" class="resolved-card"></div>
+        <div class="button-row">
+          <button id="btnLoadOverview">Load Overview</button>
+          <button id="btnPrices">Prices Snapshot</button>
+          <button id="btnSpecs">Model Specs</button>
+          <button id="btnHistory">13-Week History</button>
+          <button id="btnListingsFirst">New Listings</button>
+        </div>
+      </section>
+
+      <section id="pricesPanel" class="panel hidden">
+        <h2>Latest Complete-Week Snapshot</h2>
+        <div id="pricesCards" class="metric-grid"></div>
+      </section>
+
+      <section id="specsPanel" class="panel hidden">
+        <h2>Model Specification Consensus</h2>
+        <div id="specsGrid" class="spec-grid"></div>
+      </section>
+
+      <section id="historyPanel" class="panel hidden">
+        <div class="section-head">
+          <h2>13-Week Price History</h2>
+          <label class="inline-select" for="historyCurrency">
+            Currency
+            <select id="historyCurrency"></select>
+          </label>
+        </div>
+        <div id="historySummary" class="history-summary"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Min</th>
+                <th>Mean</th>
+                <th>Max</th>
+                <th>Listings Count</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="listingsPanel" class="panel hidden">
+        <div class="section-head">
+          <h2>New Listings (Last 7 Days)</h2>
+          <div class="button-row">
+            <button id="btnListingsNext">Load Next Page</button>
+            <button id="btnListingsWithCursor">Load Custom Cursor</button>
+          </div>
+        </div>
+        <div class="cursor-row">
+          <input id="cursor" type="text" placeholder="Paste cursor token" />
+          <p id="paginationInfo" class="hint"></p>
+        </div>
+        <div id="listingsMeta" class="history-summary"></div>
+        <div id="listingsGrid" class="listings-grid"></div>
+      </section>
+
+      <section id="listingHistoryPanel" class="panel hidden">
+        <div class="section-head">
+          <h2>Listing Price Change Timeline</h2>
+          <div class="search-row compact">
+            <input
+              id="listingId"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="listing_id"
+            />
+            <button id="btnListingHistory">Load Listing History</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date (UTC)</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody id="listingHistoryBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <details class="panel">
+        <summary>Advanced Endpoint Tools</summary>
+        <div class="advanced-grid">
+          <div>
+            <label for="groupId">Manual group_id</label>
+            <input
+              id="groupId"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="2314"
+            />
+          </div>
+          <div class="button-row">
+            <button id="btnManualPrices">GET prices</button>
+            <button id="btnManualSpecs">GET specs</button>
+            <button id="btnManualHistory">GET history</button>
+            <button id="btnManualListings">GET listings</button>
+          </div>
+        </div>
+      </details>
+
+      <section class="panel output-panel">
+        <h2>Developer Response Console</h2>
+        <div id="meta"></div>
+        <pre id="output">No request yet.</pre>
+      </section>
+    </div>
+
+    <script src="/app/assets/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+# Ignore node_modules only in the example app
+/example-app/node_modules/

@@ -1,0 +1,17 @@
+{
+  "name": "data-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vanilla JS consumer app for Search The Watch Market /data API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2"
+  }
+}

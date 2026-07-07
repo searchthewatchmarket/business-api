@@ -1,0 +1,223 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-05-05T00:00:00.000Z",
+  "__export_source": "search-the-watch-market.data-api",
+  "resources": [
+    {
+      "_id": "wrk_rustys_data_api",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Search The Watch Market — /data Business API",
+      "description": "Business API for watch market data. Requires a Business API subscription.",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_rustys_data_api",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "https://data.searchthewatchmarket.com",
+        "api_key": "YOUR_API_KEY_HERE",
+        "group_id": "2314",
+        "listing_id": "112578408"
+      },
+      "color": null,
+      "isPrivate": false
+    },
+    {
+      "_id": "env_local",
+      "_type": "environment",
+      "parentId": "wrk_rustys_data_api",
+      "name": "Local (port 6005)",
+      "data": {
+        "base_url": "http://localhost:6005",
+        "api_key": "dev-user:dev-key",
+        "group_id": "2314",
+        "listing_id": "112578408"
+      },
+      "color": "#7B61FF",
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_health",
+      "_type": "request_group",
+      "parentId": "wrk_rustys_data_api",
+      "name": "Health",
+      "description": "Service health check — no authentication required"
+    },
+    {
+      "_id": "fld_model",
+      "_type": "request_group",
+      "parentId": "wrk_rustys_data_api",
+      "name": "Model Endpoints",
+      "description": "Endpoints scoped to a watch model group (group_id)"
+    },
+    {
+      "_id": "fld_resolve",
+      "_type": "request_group",
+      "parentId": "wrk_rustys_data_api",
+      "name": "Resolve",
+      "description": "Resolve a free-text brand + model string to a group_id"
+    },
+    {
+      "_id": "fld_listing",
+      "_type": "request_group",
+      "parentId": "wrk_rustys_data_api",
+      "name": "Listing Endpoints",
+      "description": "Endpoints scoped to an individual listing (listing_id)"
+    },
+    {
+      "_id": "req_health_check",
+      "_type": "request",
+      "parentId": "fld_health",
+      "name": "Health Check",
+      "description": "Verify the service is running. No Authorization header needed.",
+      "method": "GET",
+      "url": "{{ base_url }}/",
+      "headers": [],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_prices",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Current Prices",
+      "description": "Returns the latest complete weekly price snapshot for a model group: min, max, mean and market value from the most recent fully completed historic week.\n\nUSD is always used when the weekly snapshot contains USD values. If USD is unavailable, the endpoint falls back to the first populated supported currency. listing_count is the relatedProductsCount for that week, not a live active-listing count.\n\nReplace group_id in the environment (default: 2314 = Omega Speedmaster Moonwatch 310.32.42.50.01.002).",
+      "method": "GET",
+      "url": "{{ base_url }}/data/model/{{ group_id }}/prices",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_specs",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Model Specifications",
+      "description": "Returns the consensus specification properties for a watch model group — brand, reference number, case diameter, movement caliber, water resistance, etc.\n\nData is served from the file cache where available, otherwise proxied from the main API.",
+      "method": "GET",
+      "url": "{{ base_url }}/data/model/{{ group_id }}/specs",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_history",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Price History (last 3 months)",
+      "description": "Returns the last 13 complete weeks (~3 months) of weekly average price history for a model group. Each week entry includes mean, min and max prices expressed in all 11 supported currencies simultaneously (GBP, USD, EUR, AUD, CAD, CHF, HKD, SGD, PLN, AED, JPY).\n\nThis is the same dataset that powers the historic price chart on the website.",
+      "method": "GET",
+      "url": "{{ base_url }}/data/model/{{ group_id }}/history",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_listings_p0",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "New Listings — first page",
+      "description": "Returns new listings added in the last 7 days for a watch model group. 20 items per page, ordered newest first with stable cursor pagination.\n\nOmit the cursor on the first request. Use the next_cursor value from the response to fetch the next page. Listing IDs from this response can be passed to the individual listing history endpoint.",
+      "method": "GET",
+      "url": "{{ base_url }}/data/model/{{ group_id }}/listings",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_listings_p1",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "New Listings — next cursor page",
+      "description": "Use this after the first request. Paste the previous response's next_cursor value into the cursor query parameter.",
+      "method": "GET",
+      "url": "{{ base_url }}/data/model/{{ group_id }}/listings",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "cursor",
+          "value": "",
+          "description": "Paste next_cursor from the previous response"
+        }
+      ],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_resolve",
+      "_type": "request",
+      "parentId": "fld_resolve",
+      "name": "Resolve brand + model to group_id",
+      "description": "Turns a free-text brand + model string into a group_id.\n\nExamples:\n  ?q=rolex+submariner+126610ln\n  ?q=rolex+16233\n  ?q=ap+royal+oak+15500st\n  ?q=panerai+pam01661\n  ?q=jlc+reverso+250186\n\nNormalisation is applied automatically: case-insensitive, diacritics stripped, brand aliases resolved (jlc, ap, pp, rm, …), Panerai PAM spacing collapsed, Rolex two-letter suffix merged.\n\nReturns 404 if no catalogue match exists.",
+      "method": "GET",
+      "url": "{{ base_url }}/data/resolve",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "q",
+          "value": "rolex submariner 126610ln",
+          "description": "Free-text brand + model string"
+        }
+      ],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_listing_history",
+      "_type": "request",
+      "parentId": "fld_listing",
+      "name": "Individual Listing Price History",
+      "description": "Returns the full price change history for a single listing — every distinct asking price recorded and the date it was first observed.\n\nEach entry is a deduplicated price point; only genuine price changes produce new entries. The array is ordered oldest first, making it easy to plot price-over-time.\n\nWorks for both active and inactive (sold/removed) listings.",
+      "method": "GET",
+      "url": "{{ base_url }}/data/listing/{{ listing_id }}/history",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    }
+  ]
+}
