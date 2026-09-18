@@ -1,0 +1,224 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-09-18T00:00:00.000Z",
+  "__export_source": "search-the-watch-market.data-api",
+  "resources": [
+    {
+      "_id": "wrk_stwm_data_api",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Search The Watch Market — /data Business API",
+      "description": "Business API for watch market data. Hits production (https://data.searchthewatchmarket.com). Requires a Business API subscription. Set api_key in the environment. Edit group_id and listing_id directly in each request URL.",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_stwm_data_api",
+      "name": "Base Environment",
+      "data": {
+        "api_key": "YOUR_API_KEY_HERE"
+      },
+      "color": null,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_health",
+      "_type": "request_group",
+      "parentId": "wrk_stwm_data_api",
+      "name": "Health",
+      "description": "Service health check — no authentication required"
+    },
+    {
+      "_id": "fld_model",
+      "_type": "request_group",
+      "parentId": "wrk_stwm_data_api",
+      "name": "Model Endpoints",
+      "description": "Endpoints scoped to a watch model group (group_id). Sample group_id 2314 = Omega Speedmaster Moonwatch 310.32.42.50.01.002 — edit the path if you need another model."
+    },
+    {
+      "_id": "fld_resolve",
+      "_type": "request_group",
+      "parentId": "wrk_stwm_data_api",
+      "name": "Resolve",
+      "description": "Resolve a free-text brand + model string to a group_id"
+    },
+    {
+      "_id": "fld_listing",
+      "_type": "request_group",
+      "parentId": "wrk_stwm_data_api",
+      "name": "Listing Endpoints",
+      "description": "Endpoints scoped to an individual listing (listing_id). Sample listing_id 112578408 — edit the path if you need another listing."
+    },
+    {
+      "_id": "req_health_check",
+      "_type": "request",
+      "parentId": "fld_health",
+      "name": "Health Check",
+      "description": "Verify the service is running. No Authorization header needed.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/",
+      "headers": [],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_prices",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Current Prices",
+      "description": "Returns the latest complete weekly price snapshot for a model group: min, max, mean and market value from the most recent fully completed historic week.\n\nUSD is always used when the weekly snapshot contains USD values. If USD is unavailable, the endpoint falls back to the first populated supported currency. listing_count is the relatedProductsCount for that week, not a live active-listing count.\n\nSample path uses group_id 2314 (Omega Speedmaster Moonwatch 310.32.42.50.01.002). Change the id in the URL to query another model.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/model/2314/prices",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_days_to_sell",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Days to Sell",
+      "description": "Returns the two Model Stats sell-within figures for a model group: 50% sell within and 95% sell within, in days.\n\nThese are the same values as the website (averageDaysOnMarket / maxDaysOnMarket) from the existing daily-quantity pipeline.\n\nSample path uses group_id 2314. Change the id in the URL to query another model.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/model/2314/days-to-sell",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_specs",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Model Specifications",
+      "description": "Returns the consensus specification properties for a watch model group — brand, reference number, case diameter, movement caliber, water resistance, etc.\n\nData is served from the file cache where available, otherwise proxied from the main API.\n\nSample path uses group_id 2314. Change the id in the URL to query another model.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/model/2314/specs",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_history",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "Price History (last 3 months)",
+      "description": "Returns the last 13 complete weeks (~3 months) of weekly average price history for a model group. Each week entry includes mean, min and max prices expressed in all 11 supported currencies simultaneously (GBP, USD, EUR, AUD, CAD, CHF, HKD, SGD, PLN, AED, JPY).\n\nThis is the same dataset that powers the historic price chart on the website.\n\nSample path uses group_id 2314. Change the id in the URL to query another model.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/model/2314/history",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_listings_p0",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "New Listings — first page",
+      "description": "Returns new listings added in the last 7 days for a watch model group. 20 items per page, ordered newest first with stable cursor pagination.\n\nOmit the cursor on the first request. Use the next_cursor value from the response to fetch the next page. Listing IDs from this response can be passed to the individual listing history endpoint.\n\nSample path uses group_id 2314. Change the id in the URL to query another model.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/model/2314/listings",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_model_listings_p1",
+      "_type": "request",
+      "parentId": "fld_model",
+      "name": "New Listings — next cursor page",
+      "description": "Use this after the first request. Paste the previous response's next_cursor value into the cursor query parameter. Change group_id in the URL if needed.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/model/2314/listings",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "cursor",
+          "value": "",
+          "description": "Paste next_cursor from the previous response"
+        }
+      ],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_resolve",
+      "_type": "request",
+      "parentId": "fld_resolve",
+      "name": "Resolve brand + model to group_id",
+      "description": "Turns a free-text brand + model string into a group_id.\n\nExamples:\n  ?q=rolex+submariner+126610ln\n  ?q=rolex+16233\n  ?q=ap+royal+oak+15500st\n  ?q=panerai+pam01661\n  ?q=jlc+reverso+250186\n\nNormalisation is applied automatically: case-insensitive, diacritics stripped, brand aliases resolved (jlc, ap, pp, rm, …), Panerai PAM spacing collapsed, Rolex two-letter suffix merged.\n\nReturns 404 if no catalogue match exists.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/resolve",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "q",
+          "value": "rolex submariner 126610ln",
+          "description": "Free-text brand + model string"
+        }
+      ],
+      "body": {},
+      "authentication": {}
+    },
+    {
+      "_id": "req_listing_history",
+      "_type": "request",
+      "parentId": "fld_listing",
+      "name": "Individual Listing Price History",
+      "description": "Returns the full price change history for a single listing — every distinct asking price recorded and the date it was first observed.\n\nEach entry is a deduplicated price point; only genuine price changes produce new entries. The array is ordered oldest first, making it easy to plot price-over-time.\n\nWorks for both active and inactive (sold/removed) listings.\n\nSample path uses listing_id 112578408. Change the id in the URL to query another listing.",
+      "method": "GET",
+      "url": "https://data.searchthewatchmarket.com/data/listing/112578408/history",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ api_key }}"
+        }
+      ],
+      "parameters": [],
+      "body": {},
+      "authentication": {}
+    }
+  ]
+}

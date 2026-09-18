@@ -1,0 +1,17 @@
+{
+  "name": "business-api-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sample UI that calls the Search The Watch Market Business API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2"
+  }
+}
